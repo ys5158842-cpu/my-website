@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>التبر الذهبى - أسعار الذهب والعملات بالذكاء الاصطناعي</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                        },
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Font Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Ticker Animation */
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: 200%;
+            animation: marquee 30s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* إخفاء العلامة البنفسجية الخاصة بالاستضافة المجانية */
+        a[href*="tiiny.host"],
+        div[style*="z-index: 99999"],
+        div[style*="z-index: 999999"],
+        div:has(a[href*="tiiny.host"]) {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col justify-between antialiased transition-colors duration-300">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                        <i class="fa-solid font-bold fa-coins text-slate-950 text-2xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 dark:from-amber-400 dark:via-yellow-300 dark:to-amber-500">
+                            التبر الذهبى
+                        </span>
+                        <span class="block text-xs text-slate-500 dark:text-slate-400 font-medium">متابعة الأسعار والتحليل الذكي</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs (Desktop) -->
+                <nav class="hidden md:flex space-x-1 space-x-reverse bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700/50">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 bg-amber-500 text-slate-950 shadow-md">
+                        <i class="fa-solid fa-chart-pie ml-1"></i> لوحة الأسعار
+                    </button>
+                    <button onclick="switchTab('calculator')" id="nav-calculator" class="nav-btn px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all duration-200">
+                        <i class="fa-solid fa-calculator ml-1"></i> الحاسبة والمحول
+                    </button>
+                    <button onclick="switchTab('charts')" id="nav-charts" class="nav-btn px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all duration-200">
+                        <i class="fa-solid fa-chart-line ml-1"></i> الرسوم البيانية
+                    </button>
+                    <button onclick="switchTab('gemini')" id="nav-gemini" class="nav-btn px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:text-amber-500 dark:hover:text-amber-400 transition-all duration-200">
+                        <i class="fa-solid fa-wand-magic-sparkles ml-1 text-amber-500"></i> المستشار الذكي
+                    </button>
+                    <button onclick="switchTab('contact')" id="nav-contact" class="nav-btn px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all duration-200">
+                        <i class="fa-solid fa-envelope ml-1"></i> اتصل بنا
+                    </button>
+                </nav>
+
+                <!-- Actions / Controls -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <!-- Live Status Badge -->
+                    <div class="hidden sm:flex items-center space-x-2 space-x-reverse bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs px-3 py-1.5 rounded-full font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span>مباشر من السوق العالمي والمحلي</span>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block"></i>
+                    </button>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="md:hidden w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-2 pb-4 space-y-1">
+            <button onclick="switchTab('dashboard')" class="w-full text-right px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 text-slate-950">
+                <i class="fa-solid fa-chart-pie ml-2"></i> لوحة الأسعار
+            </button>
+            <button onclick="switchTab('calculator')" class="w-full text-right px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-calculator ml-2"></i> الحاسبة والمحول
+            </button>
+            <button onclick="switchTab('charts')" class="w-full text-right px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-chart-line ml-2"></i> الرسوم البيانية
+            </button>
+            <button onclick="switchTab('gemini')" class="w-full text-right px-4 py-2.5 rounded-xl text-sm font-semibold text-amber-600 dark:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-wand-magic-sparkles ml-2"></i> المستشار الذكي
+            </button>
+            <button onclick="switchTab('contact')" class="w-full text-right px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-envelope ml-2"></i> اتصل بنا
+            </button>
+        </div>
+    </header>
+
+    <!-- Ticker Banner -->
+    <div class="bg-slate-900 text-white overflow-hidden py-2.5 border-b border-amber-500/20 text-xs sm:text-sm font-medium">
+        <div class="flex animate-marquee whitespace-nowrap">
+            <div class="flex space-x-8 space-x-reverse px-4">
+                <span><i class="fa-solid fa-gold text-amber-400 ml-1"></i> عيار 24: <strong id="ticker-24" class="text-amber-400">جاري التحديث...</strong></span>
+                <span><i class="fa-solid fa-circle text-amber-500 ml-1"></i> عيار 21: <strong id="ticker-21" class="text-amber-400">جاري التحديث...</strong></span>
+                <span><i class="fa-solid fa-circle-dot text-amber-600 ml-1"></i> عيار 18: <strong id="ticker-18" class="text-amber-400">جاري التحديث...</strong></span>
+                <span><i class="fa-solid fa-coins text-amber-300 ml-1"></i> الجنيه الذهب: <strong id="ticker-pound" class="text-amber-400">جاري التحديث...</strong></span>
+                <span><i class="fa-solid fa-globe text-blue-400 ml-1"></i> الأوقية عالمياً: <strong id="ticker-ounce" class="text-blue-400">جاري...</strong></span>
+                <span><i class="fa-solid fa-dollar-sign text-emerald-400 ml-1"></i> الدولار (حي): <strong id="ticker-usd" class="text-emerald-400">جاري...</strong></span>
+            </div>
+            <div class="flex space-x-8 space-x-reverse px-4">
+                <span><i class="fa-solid fa-gold text-amber-400 ml-1"></i> عيار 24: <strong id="ticker-24-2" class="text-amber-400">جاري التحديث...</strong></span>
+                <span><i class="fa-solid fa-circle text-amber-500 ml-1"></i> عيار 21: <strong id="ticker-21-2" class="text-amber-400">جاري التحديث...</strong></span>
+                <span><i class="fa-solid fa-circle-dot text-amber-600 ml-1"></i> عيار 18: <strong id="ticker-18-2" class="text-amber-400">جاري التحديث...</strong></span>
+                <span><i class="fa-solid fa-coins text-amber-300 ml-1"></i> الجنيه الذهب: <strong id="ticker-pound-2" class="text-amber-400">جاري التحديث...</strong></span>
+                <span><i class="fa-solid fa-globe text-blue-400 ml-1"></i> الأوقية عالمياً: <strong id="ticker-ounce-2" class="text-blue-400">جاري...</strong></span>
+                <span><i class="fa-solid fa-dollar-sign text-emerald-400 ml-1"></i> الدولار (حي): <strong id="ticker-usd-2" class="text-emerald-400">جاري...</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- TAB 1: DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content space-y-8">
+            
+            <!-- Hero Banner / Quick Summary -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-amber-950 text-white p-6 sm:p-8 border border-amber-500/20 shadow-2xl">
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="space-y-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            <i class="fa-solid fa-sparkles"></i> ملخص الأسواق اليوم في مصر (أسعار حية تلقائية)
+                        </span>
+                        <h1 class="text-2xl sm:text-4xl font-black tracking-tight">أسعار الذهب والعملات اليوم</h1>
+                        <p class="text-slate-300 text-sm sm:text-base max-w-xl">
+                            متابعة لحظية وتحديثات حية مبنية على الأسواق العالمية والمصرف المركزي.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-700/50 backdrop-blur-sm">
+                        <div>
+                            <span class="block text-xs text-slate-400">سعر الأونصة العالمي (حي)</span>
+                            <span id="hero-ounce-rate" class="text-2xl font-bold text-amber-400">جاري...</span>
+                        </div>
+                        <div class="w-px h-10 bg-slate-700"></div>
+                        <div>
+                            <span class="block text-xs text-slate-400">الدولار بالمصرف المركزى (حي)</span>
+                            <span id="hero-usd-rate" class="text-2xl font-bold text-emerald-400">جاري...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gold Prices Grid -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-cubes text-amber-500"></i> أسعار الذهب بمختلف العيارات (تحديث حي مباشر)
+                    </h2>
+                    <span class="text-xs bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2.5 py-1 rounded-lg font-bold">GoldAPI Live</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- 24K Card -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700/60 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-2 h-full bg-amber-500"></div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg">الأعلى نقاءً</span>
+                                <h3 class="text-lg font-extrabold mt-2">عيار 24</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-lg">
+                                24K
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-baseline gap-1">
+                                <span id="card-24" class="text-3xl font-black text-slate-900 dark:text-white">--</span>
+                                <span class="text-xs font-semibold text-slate-500">ج.م / جرام</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 21K Card -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border-2 border-amber-500/50 dark:border-amber-500/40 shadow-md hover:shadow-lg transition-shadow relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 bg-amber-500 text-slate-950 text-[10px] font-black px-3 py-1 rounded-br-xl">الأكثر تداولاً</div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg">العيار الشعبي</span>
+                                <h3 class="text-lg font-extrabold mt-2">عيار 21</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-lg shadow-md shadow-amber-500/20">
+                                21K
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-baseline gap-1">
+                                <span id="card-21" class="text-3xl font-black text-slate-900 dark:text-white">--</span>
+                                <span class="text-xs font-semibold text-slate-500">ج.م / جرام</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 18K Card -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700/60 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2.5 py-1 rounded-lg">المشغولات الذهبية</span>
+                                <h3 class="text-lg font-extrabold mt-2">عيار 18</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-lg">
+                                18K
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-baseline gap-1">
+                                <span id="card-18" class="text-3xl font-black text-slate-900 dark:text-white">--</span>
+                                <span class="text-xs font-semibold text-slate-500">ج.م / جرام</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gold Coin / Pound -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700/60 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg">8 جرام - عيار 21</span>
+                                <h3 class="text-lg font-extrabold mt-2">الجنيه الذهب</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-lg">
+                                <i class="fa-solid fa-coins"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-baseline gap-1">
+                                <span id="card-pound" class="text-3xl font-black text-slate-900 dark:text-white">--</span>
+                                <span class="text-xs font-semibold text-slate-500">ج.م</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Foreign Currencies & Silver Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Currencies Table (2 Cols) -->
+                <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/60 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-money-bill-transfer text-emerald-500"></i> أسعار العملات الحية (محدثة تلقائياً)
+                        </h3>
+                        <span class="text-xs bg-emerald-500/10 text-emerald-500 px-2.5 py-1 rounded-lg font-bold">Live API</span>
+                    </div>
+
+                    <div class="overflow-x-auto max-h-[480px]">
+                        <table class="w-full text-right text-sm">
+                            <thead class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700/40 rounded-xl sticky top-0 backdrop-blur-md">
+                                <tr>
+                                    <th class="p-3 rounded-r-xl">العملة</th>
+                                    <th class="p-3">رمز العملة</th>
+                                    <th class="p-3">سعر الشراء</th>
+                                    <th class="p-3 rounded-l-xl">سعر البيع</th>
+                                </tr>
+                            </thead>
+                            <tbody id="currency-table-body" class="divide-y divide-slate-100 dark:divide-slate-700/50 font-semibold">
+                                <tr>
+                                    <td colspan="4" class="text-center py-6 text-slate-400">جاري جلب أسعار العملات الحية...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Silver Prices (1 Col) -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/60 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-gem text-slate-400"></i> أسعار الفضة اليوم
+                        </h3>
+                        <span class="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-500">مصر</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/30 flex justify-between items-center">
+                            <div>
+                                <span class="block font-bold text-sm">فضة نقي عيار 999</span>
+                                <span class="text-xs text-slate-400">السبائك والاستثمار</span>
+                            </div>
+                            <span class="text-lg font-black text-slate-800 dark:text-slate-100">103.75 ج.م</span>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/30 flex justify-between items-center">
+                            <div>
+                                <span class="block font-bold text-sm">فضة إسترليني عيار 925</span>
+                                <span class="text-xs text-slate-400">المجوف والزيوت</span>
+                            </div>
+                            <span class="text-lg font-black text-slate-800 dark:text-slate-100">96.25 ج.م</span>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/30 flex justify-between items-center">
+                            <div>
+                                <span class="block font-bold text-sm">فضة عيار 800</span>
+                                <span class="text-xs text-slate-400">سلاسل وإكسسوارات</span>
+                            </div>
+                            <span class="text-lg font-black text-slate-800 dark:text-slate-100">83.25 ج.م</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Section -->
+            <div class="space-y-4 pt-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-regular fa-newspaper text-amber-500"></i> آخر أخبار الذهب والسوق
+                    </h2>
+                    <span class="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-lg">تحديث تلقائي</span>
+                </div>
+                
+                <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="text-center col-span-full py-8 text-slate-500 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <i class="fa-solid fa-spinner fa-spin text-3xl text-amber-500 mb-3"></i>
+                        <p class="font-bold">جاري جلب أحدث الأخبار من المصادر الاقتصادية...</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 2: CALCULATOR & CONVERTER -->
+        <section id="tab-calculator" class="tab-content hidden space-y-8">
+            <div class="max-w-4xl mx-auto space-y-8">
+                
+                <div class="text-center space-y-2">
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">حاسبة الذهب والمصنعية والمحول</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">احسب التكلفة الإجمالية لشراء المشغولات أو السبائك شاملة المصنعية والضريبة بدقة عالية</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Gold Price Calculator -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700/60 shadow-lg space-y-5">
+                        <div class="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-calculator"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 dark:text-white">حاسبة شراء الذهب والمصنعية</h3>
+                                <span class="text-xs text-slate-400">تقدير السعر النهائي للمحلات</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">اختر العيار</label>
+                                <select id="calc-karat" onchange="calculateGoldPrice()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all">
+                                    <option value="24">عيار 24</option>
+                                    <option value="21" selected>عيار 21</option>
+                                    <option value="18">عيار 18</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">الوزن بالجرام</label>
+                                <input type="number" id="calc-weight" value="10" min="0.1" step="0.1" oninput="calculateGoldPrice()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="أدخل الوزن بالجرام">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">المصنعية والدمغة (لكل جرام)</label>
+                                <input type="number" id="calc-making" value="150" min="0" oninput="calculateGoldPrice()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="المصنعية بالجنيه">
+                            </div>
+                        </div>
+
+                        <div class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 space-y-2">
+                            <div class="flex justify-between text-xs text-slate-600 dark:text-slate-300">
+                                <span>قيمة الذهب الخالص:</span>
+                                <span id="res-gold-raw" class="font-bold">0 ج.م</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-slate-600 dark:text-slate-300">
+                                <span>إجمالي المصنعية والدمغة:</span>
+                                <span id="res-making-total" class="font-bold">0 ج.م</span>
+                            </div>
+                            <div class="pt-2 border-t border-amber-500/20 flex justify-between items-center">
+                                <span class="font-extrabold text-sm text-slate-900 dark:text-white">الإجمالي المتوقع:</span>
+                                <span id="res-grand-total" class="text-2xl font-black text-amber-500">0 ج.م</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Currency Converter -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700/60 shadow-lg space-y-5">
+                        <div class="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 dark:text-white">محول العملات السريع</h3>
+                                <span class="text-xs text-slate-400">تحويل مقابل الجنيه المصري (حي)</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">المبلغ</label>
+                                <input type="number" id="conv-amount" value="100" min="1" oninput="convertCurrency()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">من العملة</label>
+                                <select id="conv-from" onchange="convertCurrency()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+                                    <option value="USD">دولار أمريكي (USD)</option>
+                                    <option value="EUR">يورو (EUR)</option>
+                                    <option value="GBP">جنيه إسترليني (GBP)</option>
+                                    <option value="SAR">ريال سعودي (SAR)</option>
+                                    <option value="AED">درهم إماراتي (AED)</option>
+                                    <option value="KWD">دينار كويتي (KWD)</option>
+                                    <option value="QAR">ريال قطري (QAR)</option>
+                                    <option value="CAD">دولار كندي (CAD)</option>
+                                    <option value="CHF">فرنك سويسري (CHF)</option>
+                                    <option value="JPY">ين ياباني (JPY)</option>
+                                    <option value="AUD">دولار أسترالي (AUD)</option>
+                                    <option value="CNY">يوان صيني (CNY)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 text-center space-y-1">
+                            <span class="text-xs text-slate-500 dark:text-slate-400 block">القيمة بالجنيه المصري (EGP)</span>
+                            <span id="conv-result" class="text-3xl font-black text-emerald-500">0.00 ج.م</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: CHARTS -->
+        <section id="tab-charts" class="tab-content hidden space-y-8">
+            <div class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 dark:text-white">الرسوم البيانية وتطور الأسعار</h2>
+                        <p class="text-slate-500 text-sm">متابعة الحركة التاريخية لأسعار الذهب والأوقية عالمياً</p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700/60 shadow-lg space-y-4">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+                        <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-area text-amber-500"></i> مؤشر الذهب عيار 21 في مصر (آخر 7 أيام)
+                        </h3>
+                    </div>
+                    <div class="relative h-72 sm:h-96 w-full">
+                        <canvas id="goldHistoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: GEMINI AI ADVISOR -->
+        <section id="tab-gemini" class="tab-content hidden space-y-8">
+            <div class="max-w-3xl mx-auto space-y-6">
+                
+                <div class="text-center space-y-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-xs font-bold">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> مدعوم بالذكاء الاصطناعي (Gemini)
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">المستشار المالي الذهبي</h2>
+                </div>
+
+                <!-- Chat Box Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700/60 shadow-xl overflow-hidden flex flex-col h-[500px]">
+                    <div id="chat-messages" class="flex-grow p-4 sm:p-6 overflow-y-auto space-y-4 text-sm">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xs shrink-0">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="bg-slate-100 dark:bg-slate-700/60 rounded-2xl p-4 text-slate-800 dark:text-slate-200 max-w-[85%] space-y-2">
+                                <p class="font-semibold">أهلاً بك! أنا مستشارك الذكي لأسعار الذهب والعملات. كيف يمكنني مساعدتك اليوم في اتخاذ قرار الشراء أو الاستثمار؟</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-4 py-2 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-700/50 flex gap-2 overflow-x-auto no-scrollbar text-xs">
+                        <button onclick="sendQuickPrompt('هل الوقت مناسب لشراء الذهب الآن؟')" class="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-amber-500 whitespace-nowrap">
+                            💡 هل الوقت مناسب لشراء الذهب؟
+                        </button>
+                        <button onclick="sendQuickPrompt('ما الفرق بين عيار 21 وعيار 18 للاستثمار؟')" class="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-amber-500 whitespace-nowrap">
+                            🪙 الفرق بين عيار 21 وعيار 18
+                        </button>
+                    </div>
+
+                    <!-- Input Form -->
+                    <div class="p-3 sm:p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex gap-2">
+                        <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter') sendMessage()" class="flex-grow bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <button onclick="sendMessage()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition-colors flex items-center gap-1">
+                            <span>إرسال</span>
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: CONTACT US -->
+        <section id="tab-contact" class="tab-content hidden space-y-8">
+            <div class="max-w-3xl mx-auto space-y-6">
+                
+                <div class="text-center space-y-2">
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">اتصل بنا</h2>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700/60 shadow-lg">
+                    <form action="https://formsubmit.co/ys5158842@gmail.com" method="POST" class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">الاسم</label>
+                            <input type="text" name="name" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="اكتب اسمك هنا">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">البريد الإلكتروني</label>
+                            <input type="email" name="email" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="اكتب بريدك الإلكتروني للتواصل">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">الرسالة</label>
+                            <textarea name="message" rows="5" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="اكتب رسالتك هنا..."></textarea>
+                        </div>
+                        
+                        <input type="hidden" name="_subject" value="رسالة جديدة من زائر لموقع التبر الذهبى!">
+                        <input type="hidden" name="_captcha" value="false">
+                        
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-xl transition-colors text-sm">
+                            إرسال الرسالة
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 6: PRIVACY POLICY -->
+        <section id="tab-privacy" class="tab-content hidden space-y-8">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">سياسة الخصوصية</h2>
+                </div>
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700/60 shadow-lg text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-4">
+                    <p>في <strong>التبر الذهبى</strong>، تعتبر خصوصية زوارنا من أهم أولوياتنا...</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300 py-8 text-xs text-slate-500 dark:text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <i class="fa-solid fa-coins text-amber-500 text-lg"></i>
+                <span class="font-bold text-slate-800 dark:text-slate-200">التبر الذهبى © 2026</span>
+            </div>
+            
+            <div class="flex items-center gap-4 font-semibold text-sm">
+                <button onclick="switchTab('privacy')" class="hover:text-amber-500 transition-colors">سياسة الخصوصية</button>
+                <button onclick="switchTab('contact')" class="hover:text-amber-500 transition-colors">اتصل بنا</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const PRICES = {
+            gold: { 24: 0, 21: 0, 18: 0, pound: 0, ounce: 0 },
+            currency: { 
+                USD: 0, EUR: 0, GBP: 0, SAR: 0, AED: 0, KWD: 0, QAR: 0,
+                CAD: 0, CHF: 0, JPY: 0, AUD: 0, CNY: 0
+            }
+        };
+
+        const currencyMeta = {
+            USD: { name: 'الدولار الأمريكي', symbol: '$', bg: 'emerald' },
+            EUR: { name: 'اليورو الأوروبي', symbol: '€', bg: 'blue' },
+            GBP: { name: 'الجنيه الإسترليني', symbol: '£', bg: 'indigo' },
+            SAR: { name: 'الريال السعودي', symbol: 'ر.س', bg: 'amber' },
+            AED: { name: 'الدرهم الإماراتي', symbol: 'د.إ', bg: 'purple' },
+            KWD: { name: 'الدينار الكويتي', symbol: 'د.ك', bg: 'sky' },
+            QAR: { name: 'الريال القطري', symbol: 'ر.ق', bg: 'rose' },
+            CAD: { name: 'الدولار الكندي', symbol: 'C$', bg: 'cyan' },
+            CHF: { name: 'الفرنك السويسري', symbol: 'CHF', bg: 'teal' },
+            JPY: { name: 'الين الياباني', symbol: '¥', bg: 'orange' },
+            AUD: { name: 'الدولار الأسترالي', symbol: 'A$', bg: 'pink' },
+            CNY: { name: 'اليوان الصيني', symbol: '¥', bg: 'red' }
+        };
+
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all duration-200";
+            });
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.className = "nav-btn px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 bg-amber-500 text-slate-950 shadow-md";
+            }
+            mobileMenu.classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* -----------------------------------------------------
+           جلب وتحديث الأسعار الحية للذهب والعملات
+        ------------------------------------------------------ */
+        async function fetchLiveMarketData() {
+            const currencyApiKey = '94ff9f03a7057ff86340b64b';
+            const goldApiKey = 'goldapi-1145b84e357fb4598e79dfd63de877bb-io';
+
+            try {
+                const [currencyRes, goldRes] = await Promise.all([
+                    fetch(`https://v6.exchangerate-api.com/v6/${currencyApiKey}/latest/USD`),
+                    fetch("https://www.goldapi.io/api/XAU/USD", {
+                        method: 'GET',
+                        headers: {
+                            'x-access-token': goldApiKey,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                ]);
+
+                const currencyData = await currencyRes.json();
+                const goldData = await goldRes.json();
+
+                if (currencyData && currencyData.result === 'success') {
+                    const rates = currencyData.conversion_rates;
+                    const usdToEgp = rates.EGP;
+
+                    PRICES.currency.USD = usdToEgp;
+                    PRICES.currency.EUR = usdToEgp / rates.EUR;
+                    PRICES.currency.GBP = usdToEgp / rates.GBP;
+                    PRICES.currency.SAR = usdToEgp / rates.SAR;
+                    PRICES.currency.AED = usdToEgp / rates.AED;
+                    PRICES.currency.KWD = usdToEgp / rates.KWD;
+                    PRICES.currency.QAR = usdToEgp / rates.QAR;
+                    PRICES.currency.CAD = usdToEgp / rates.CAD;
+                    PRICES.currency.CHF = usdToEgp / rates.CHF;
+                    PRICES.currency.JPY = usdToEgp / rates.JPY;
+                    PRICES.currency.AUD = usdToEgp / rates.AUD;
+                    PRICES.currency.CNY = usdToEgp / rates.CNY;
+                }
+
+                let globalOunce = 4161.00;
+                if (goldData && goldData.price) {
+                    globalOunce = goldData.price;
+                }
+                PRICES.gold.ounce = globalOunce;
+
+                const gram24 = (globalOunce * PRICES.currency.USD) / 31.1035;
+                PRICES.gold[24] = Math.round(gram24);
+                PRICES.gold[21] = Math.round(gram24 * (21 / 24));
+                PRICES.gold[18] = Math.round(gram24 * (18 / 24));
+                PRICES.gold.pound = Math.round(PRICES.gold[21] * 8);
+
+                updateAllUI();
+
+            } catch (error) {
+                console.error('Error fetching live market data:', error);
+            }
+        }
+
+        function updateAllUI() {
+            const usdFormatted = PRICES.currency.USD.toFixed(2) + " ج.م";
+            const ounceFormatted = "$" + PRICES.gold.ounce.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            if (document.getElementById('ticker-usd')) document.getElementById('ticker-usd').innerText = usdFormatted;
+            if (document.getElementById('ticker-usd-2')) document.getElementById('ticker-usd-2').innerText = usdFormatted;
+            if (document.getElementById('ticker-ounce')) document.getElementById('ticker-ounce').innerText = ounceFormatted;
+            if (document.getElementById('ticker-ounce-2')) document.getElementById('ticker-ounce-2').innerText = ounceFormatted;
+
+            if (document.getElementById('ticker-24')) document.getElementById('ticker-24').innerText = PRICES.gold[24].toLocaleString() + " ج.م";
+            if (document.getElementById('ticker-21')) document.getElementById('ticker-21').innerText = PRICES.gold[21].toLocaleString() + " ج.م";
+            if (document.getElementById('ticker-18')) document.getElementById('ticker-18').innerText = PRICES.gold[18].toLocaleString() + " ج.م";
+            if (document.getElementById('ticker-pound')) document.getElementById('ticker-pound').innerText = PRICES.gold.pound.toLocaleString() + " ج.م";
+
+            if (document.getElementById('ticker-24-2')) document.getElementById('ticker-24-2').innerText = PRICES.gold[24].toLocaleString() + " ج.م";
+            if (document.getElementById('ticker-21-2')) document.getElementById('ticker-21-2').innerText = PRICES.gold[21].toLocaleString() + " ج.م";
+            if (document.getElementById('ticker-18-2')) document.getElementById('ticker-18-2').innerText = PRICES.gold[18].toLocaleString() + " ج.م";
+            if (document.getElementById('ticker-pound-2')) document.getElementById('ticker-pound-2').innerText = PRICES.gold.pound.toLocaleString() + " ج.م";
+
+            if (document.getElementById('hero-usd-rate')) document.getElementById('hero-usd-rate').innerText = usdFormatted;
+            if (document.getElementById('hero-ounce-rate')) document.getElementById('hero-ounce-rate').innerText = ounceFormatted;
+
+            if (document.getElementById('card-24')) document.getElementById('card-24').innerText = PRICES.gold[24].toLocaleString();
+            if (document.getElementById('card-21')) document.getElementById('card-21').innerText = PRICES.gold[21].toLocaleString();
+            if (document.getElementById('card-18')) document.getElementById('card-18').innerText = PRICES.gold[18].toLocaleString();
+            if (document.getElementById('card-pound')) document.getElementById('card-pound').innerText = PRICES.gold.pound.toLocaleString();
+
+            const tbody = document.getElementById('currency-table-body');
+            if (tbody) {
+                tbody.innerHTML = '';
+                for (const [code, rate] of Object.entries(PRICES.currency)) {
+                    if (currencyMeta[code]) {
+                        const meta = currencyMeta[code];
+                        const buyPrice = (rate * 0.997).toFixed(2);
+                        const sellPrice = rate.toFixed(2);
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td class="p-3 flex items-center gap-2">
+                                    <span class="w-7 h-7 rounded-full bg-${meta.bg}-500/10 text-${meta.bg}-500 flex items-center justify-center font-bold text-xs">${meta.symbol}</span>
+                                    ${meta.name}
+                                </td>
+                                <td class="p-3 text-slate-400 font-mono text-xs">${code}</td>
+                                <td class="p-3 text-slate-900 dark:text-slate-100">${buyPrice} ج.م</td>
+                                <td class="p-3 text-emerald-600 dark:text-emerald-400">${sellPrice} ج.م</td>
+                            </tr>
+                        `;
+                    }
+                }
+            }
+
+            calculateGoldPrice();
+            convertCurrency();
+        }
+
+        function calculateGoldPrice() {
+            const karat = document.getElementById('calc-karat').value;
+            const weight = parseFloat(document.getElementById('calc-weight').value) || 0;
+            const makingPerGram = parseFloat(document.getElementById('calc-making').value) || 0;
+            const gramPrice = PRICES.gold[karat] || 0;
+            const rawTotal = gramPrice * weight;
+            const makingTotal = makingPerGram * weight;
+            const grandTotal = rawTotal + makingTotal;
+            
+            document.getElementById('res-gold-raw').innerText = rawTotal.toLocaleString() + " ج.م";
+            document.getElementById('res-making-total').innerText = makingTotal.toLocaleString() + " ج.م";
+            document.getElementById('res-grand-total').innerText = grandTotal.toLocaleString() + " ج.م";
+        }
+
+        function convertCurrency() {
+            const amount = parseFloat(document.getElementById('conv-amount').value) || 0;
+            const currency = document.getElementById('conv-from').value;
+            const rate = PRICES.currency[currency] || 0;
+            const total = amount * rate;
+            document.getElementById('conv-result').innerText = total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " ج.م";
+        }
+
+        /* -----------------------------------------------------
+           ربط الذكاء الاصطناعي الفعلي (Gemini API - متوافق مع AQ.)
+        ------------------------------------------------------ */
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            appendMessage('user', text);
+            input.value = '';
+
+            const loadingId = 'loading-' + Date.now();
+            appendLoadingMessage(loadingId);
+
+            const apiKey = 'AQ.Ab8RN6LhD0iKBuGrffezTnpvjqFNAQu77L8OaK2ovMfC7BD8xQ';
+            let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+            let headers = { 'Content-Type': 'application/json' };
+
+            // التعامل الصحيح مع المفاتيح الحديثة التي تبدأ بـ AQ.
+            if (apiKey.startsWith('AQ.')) {
+                headers['Authorization'] = `Bearer ${apiKey}`;
+            } else {
+                url += `?key=${apiKey}`;
+            }
+
+            const systemInstruction = `أنت المستشار المالي الذكي لموقع 'التبر الذهبى' المتخصص في متابعة أسعار الذهب والعملات في مصر. سعر الدولار الحي الحالي هو ${PRICES.currency.USD.toFixed(2)} ج.م وعيار 21 هو ${PRICES.gold[21]} ج.م والأونصة العالمية ${PRICES.gold.ounce}$. أجب على استفسارات المستخدمين باحترافية باللغة العربية.`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: systemInstruction + "\n\nسؤال المستخدم: " + text }] }]
+                    })
+                });
+
+                const data = await response.json();
+                removeLoadingMessage(loadingId);
+
+                if (data.candidates && data.candidates[0] && data.candidates[0].content.parts[0].text) {
+                    const aiReply = data.candidates[0].content.parts[0].text;
+                    appendMessage('ai', aiReply);
+                } else {
+                    throw new Error('Invalid response structure');
+                }
+            } catch (error) {
+                removeLoadingMessage(loadingId);
+                console.error('Gemini API Error:', error);
+                appendMessage('ai', 'عذراً، حدث خطأ أثناء الاتصال بالمستشار الذكي. يرجى المحاولة لاحقاً.');
+            }
+        }
+
+        function sendQuickPrompt(promptText) {
+            document.getElementById('chat-input').value = promptText;
+            sendMessage();
+        }
+
+        function appendMessage(sender, text) {
+            const container = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            if (sender === 'user') {
+                msgDiv.className = "flex items-start gap-3 justify-end";
+                msgDiv.innerHTML = `<div class="bg-amber-500 text-slate-950 font-medium rounded-2xl p-3.5 max-w-[85%] text-xs sm:text-sm shadow-sm">${text}</div>`;
+            } else {
+                msgDiv.className = "flex items-start gap-3";
+                msgDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-slate-100 dark:bg-slate-700/60 rounded-2xl p-4 text-slate-800 dark:text-slate-200 max-w-[85%] text-xs sm:text-sm leading-relaxed">${text}</div>
+                `;
+            }
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendLoadingMessage(id) {
+            const container = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.id = id;
+            msgDiv.className = "flex items-start gap-3";
+            msgDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-robot"></i></div>
+                <div class="bg-slate-100 dark:bg-slate-700/60 rounded-2xl p-4 text-slate-800 dark:text-slate-200 text-xs sm:text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-spinner fa-spin text-amber-500"></i>
+                    <span>جاري تحليل الأسواق وصياغة الرد...</span>
+                </div>
+            `;
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeLoadingMessage(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        /* -----------------------------------------------------
+           كود جلب الأخبار عبر NewsData.io
+        ------------------------------------------------------ */
+        async function fetchLiveNews() {
+            const newsContainer = document.getElementById('news-container');
+            const newsApiKey = 'pub_c5598ea0108c4bedacbe46ebcdcf04d0';
+            const url = `https://newsdata.io/api/1/latest?apikey=${newsApiKey}&q=أسعار الذهب مصر&language=ar&country=eg`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.results && data.results.length > 0) {
+                    newsContainer.innerHTML = '';
+                    const articles = data.results.slice(0, 6);
+
+                    articles.forEach(article => {
+                        const dateObj = new Date(article.pubDate || Date.now());
+                        const formattedDate = dateObj.toLocaleDateString('ar-EG', {
+                            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+
+                        const sourceName = article.source_name || "أخبار الاقتصاد";
+                        const title = article.title || "بدون عنوان";
+                        const articleUrl = article.link || "#";
+
+                        const newsCard = `
+                            <a href="${articleUrl}" target="_blank" rel="noopener noreferrer" class="block bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700/60 shadow-sm hover:shadow-md hover:border-amber-500/50 dark:hover:border-amber-500/50 transition-all group h-full flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-3">
+                                        <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg">
+                                            <i class="fa-solid fa-rss ml-1"></i> ${sourceName}
+                                        </span>
+                                    </div>
+                                    <h3 class="text-sm font-bold text-slate-900 dark:text-white leading-relaxed mb-3 group-hover:text-amber-500 transition-colors line-clamp-3">
+                                        ${title}
+                                    </h3>
+                                </div>
+                                <div class="flex justify-between items-center text-[10px] text-slate-500 border-t border-slate-100 dark:border-slate-700/50 pt-3 mt-auto">
+                                    <span><i class="fa-regular fa-clock ml-1"></i> ${formattedDate}</span>
+                                    <span class="text-amber-500 font-bold">اقرأ المزيد &larr;</span>
+                                </div>
+                            </a>
+                        `;
+                        newsContainer.innerHTML += newsCard;
+                    });
+                } else {
+                    throw new Error('لم يتم العثور على أخبـار.');
+                }
+            } catch (error) {
+                console.error('Error fetching news from NewsData.io:', error);
+                newsContainer.innerHTML = `
+                    <div class="text-center col-span-full py-8 text-slate-500 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <i class="fa-solid fa-circle-exclamation text-xl text-amber-500 mb-2"></i>
+                        <p class="font-bold text-sm">عذراً، تعذر جلب الأخبار في الوقت الحالي. يرجى التحقق لاحقاً.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize Everything when DOM is loaded
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchLiveMarketData();
+
+            const ctx = document.getElementById('goldHistoryChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+                        datasets: [{
+                            label: 'سعر عيار 21 (ج.م)',
+                            data: [6235, 6230, 6090, 6135, 6110, 6140, 6125],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(148, 163, 184, 0.1)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            fetchLiveNews();
+        });
+    </script>
+</body>
+</html>
