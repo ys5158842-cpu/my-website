@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>التبر الذهبى - أسعار الذهب والعملات  </title>
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="google50b6797e8038e2b8" />
+    <title>التبر الذهبى - أسعار الذهب والعملات بالذكاء الاصطناعي</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -519,7 +521,7 @@
             </div>
         </section>
 
-        <!-- TAB 3: CHARTS (الرسم البياني الجديد المتطور والتفاعلي) -->
+        <!-- TAB 3: CHARTS -->
         <section id="tab-charts" class="tab-content hidden space-y-8">
             <div class="space-y-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -527,7 +529,6 @@
                         <h2 class="text-2xl font-black text-slate-900 dark:text-white">الرسوم البيانية وتطور الأسعار الحية</h2>
                         <p class="text-slate-500 text-sm">تحليل حقيقي وديناميكي لحركة أسعار الذهب في مصر</p>
                     </div>
-                    <!-- أزرار التبديل التفاعلية -->
                     <div class="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700/50 self-start">
                         <button onclick="updateChartPeriod('7d')" id="btn-chart-7d" class="px-4 py-1.5 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 shadow-sm transition-all">7 أيام</button>
                         <button onclick="updateChartPeriod('30d')" id="btn-chart-30d" class="px-4 py-1.5 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all">30 يوم</button>
@@ -760,7 +761,7 @@
                 PRICES.gold.pound = Math.round(PRICES.gold[21] * 8);
 
                 updateAllUI();
-                initOrUpdateGoldChart(); // تحديث الرسم البياني أوتوماتيكياً بالسعر الحي الجديد
+                initOrUpdateGoldChart();
 
             } catch (error) {
                 console.error('Error fetching live market data:', error);
@@ -845,7 +846,7 @@
         }
 
         /* -----------------------------------------------------
-           برمجة وتحديث الرسم البياني الذكي المتطور (Chart.js Pro)
+           الرسم البياني الذكي المتطور (Chart.js Pro)
         ------------------------------------------------------ */
         let goldChartInstance = null;
         
@@ -880,7 +881,6 @@
                 ];
             }
 
-            // تدرج ألوان احترافي خلف الرسم البياني
             const chartCtx = ctx.getContext('2d');
             const gradient = chartCtx.createLinearGradient(0, 0, 0, 300);
             gradient.addColorStop(0, 'rgba(245, 158, 11, 0.4)');
@@ -1066,7 +1066,7 @@
         }
 
         /* -----------------------------------------------------
-           كود جلب الأخبار عبر NewsData.io
+           جلب الأخبار عبر NewsData.io
         ------------------------------------------------------ */
         async function fetchLiveNews() {
             const newsContainer = document.getElementById('news-container');
@@ -1125,7 +1125,6 @@
             }
         }
 
-        // Initialize Everything when DOM is loaded
         window.addEventListener('DOMContentLoaded', () => {
             fetchLiveMarketData();
             fetchLiveNews();
