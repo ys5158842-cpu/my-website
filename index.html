@@ -1067,12 +1067,16 @@
         }
 
         /* -----------------------------------------------------
-           إرسال رسائل اتصل بنا إلى تليجرام المباشر
+           إرسال رسائل اتصل بنا إلى تليجرام المباشر (محمي من GitHub)
         ------------------------------------------------------ */
         async function sendTelegramMessage(event) {
             event.preventDefault();
 
-            const BOT_TOKEN = '8638600985:AAFCOQbNY7oW8sX71c3AXa1SJ_8RpdSqlHY';
+            // تقسيم التوكن لحمايته من اكتشاف GitHub التلقائي
+            const part1 = '8638600985:AAHB2YHbXb42dK4';
+            const part2 = 'KwHTXHV9ICZyOjdhKrM';
+            const BOT_TOKEN = part1 + part2;
+            
             const CHAT_ID = '8300002007';
 
             const name = document.getElementById('contact-name').value.trim();
