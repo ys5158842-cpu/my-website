@@ -600,28 +600,29 @@
                 
                 <div class="text-center space-y-2">
                     <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">اتصل بنا</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">تواصل معنا وسنرد عليك عبر تليجرام في أقرب وقت</p>
                 </div>
 
                 <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700/60 shadow-lg">
-                    <form action="https://formsubmit.co/ys5158842@gmail.com" method="POST" class="space-y-5">
+                    <form id="telegram-contact-form" onsubmit="sendTelegramMessage(event)" class="space-y-5">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">الاسم</label>
-                            <input type="text" name="name" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="اكتب اسمك هنا">
+                            <input type="text" id="contact-name" name="name" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="اكتب اسمك هنا">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">البريد الإلكتروني</label>
-                            <input type="email" name="email" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="اكتب بريدك الإلكتروني للتواصل">
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">البريد الإلكتروني / رقم الهاتـف</label>
+                            <input type="text" id="contact-email" name="email" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="اكتب رقمك أو بريدك للتواصل معك">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">الرسالة</label>
-                            <textarea name="message" rows="5" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="اكتب رسالتك هنا..."></textarea>
+                            <textarea id="contact-message" name="message" rows="5" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="اكتب رسالتك هنا..."></textarea>
                         </div>
                         
-                        <input type="hidden" name="_subject" value="رسالة جديدة من زائر لموقع التبر الذهبى!">
-                        <input type="hidden" name="_captcha" value="false">
-                        
-                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-xl transition-colors text-sm">
-                            إرسال الرسالة
+                        <div id="contact-status" class="hidden p-3 rounded-xl text-xs font-bold text-center"></div>
+
+                        <button type="submit" id="contact-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
+                            <i class="fa-paper-plane fa-solid"></i>
+                            <span>إرسال الرسالة إلى تليجرام</span>
                         </button>
                     </form>
                 </div>
@@ -1063,6 +1064,70 @@
         function removeLoadingMessage(id) {
             const el = document.getElementById(id);
             if (el) el.remove();
+        }
+
+        /* -----------------------------------------------------
+           إرسال رسائل اتصل بنا إلى تليجرام المباشر
+        ------------------------------------------------------ */
+        async function sendTelegramMessage(event) {
+            event.preventDefault();
+
+            const BOT_TOKEN = '8638600985:AAFCOQbNY7oW8sX71c3AXa1SJ_8RpdSqlHY';
+            const CHAT_ID = '8300002007';
+
+            const name = document.getElementById('contact-name').value.trim();
+            const contact = document.getElementById('contact-email').value.trim();
+            const message = document.getElementById('contact-message').value.trim();
+            const statusDiv = document.getElementById('contact-status');
+            const submitBtn = document.getElementById('contact-submit-btn');
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>جاري الإرسال...</span>`;
+            statusDiv.classList.add('hidden');
+
+            const telegramText = `
+🔔 *رسالة جديدة من موقع التبر الذهبي!*
+
+👤 *الاسم:* ${name}
+📞 *وسيلة التواصل:* ${contact}
+📝 *الرسالة:*
+${message}
+            `;
+
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: telegramText,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    statusDiv.className = "p-3 rounded-xl text-xs font-bold text-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
+                    statusDiv.innerText = "✅ تم إرسال رسالتك بنجاح! تصلنا الرسالة الآن فوراً.";
+                    statusDiv.classList.remove('hidden');
+                    document.getElementById('telegram-contact-form').reset();
+                } else {
+                    throw new Error(data.description || 'فشل الإرسال');
+                }
+            } catch (error) {
+                console.error('Telegram API Error:', error);
+                statusDiv.className = "p-3 rounded-xl text-xs font-bold text-center bg-rose-500/10 text-rose-500 border border-rose-500/20";
+                statusDiv.innerText = "❌ حدث خطأ أثناء الإرسال. يرجى المحاولة مجدداً.";
+                statusDiv.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>إرسال الرسالة إلى تليجرام</span>`;
+            }
         }
 
         /* -----------------------------------------------------
